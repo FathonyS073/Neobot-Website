@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Superadmin\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,7 +29,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-
 // Dashboard routes by role
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/admin/dashboard', function () {
@@ -42,6 +42,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/client/dashboard', function () {
         return 'Client Dashboard';
     })->name('client.dashboard');
+});
+
+Route::middleware(['auth', 'superadmin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    // Tambahkan route lain sesuai menu sidebar
+    Route::get('/psikiater', [DashboardController::class, 'psikiater'])->name('psikiater');
+    Route::get('/client', [DashboardController::class, 'client'])->name('client');
+    Route::get('/konsultasi', [DashboardController::class, 'konsultasi'])->name('konsultasi');
+    Route::get('/chatbot-logs', [DashboardController::class, 'chatbotLogs'])->name('chatbotLogs');
+    Route::get('/pembayaran', [DashboardController::class, 'pembayaran'])->name('pembayaran');
 });
 
 require __DIR__.'/auth.php';
