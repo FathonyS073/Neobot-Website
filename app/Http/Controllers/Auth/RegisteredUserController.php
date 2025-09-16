@@ -34,22 +34,19 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['nullable', 'in:client,psikiater'],
+            'role' => ['required', 'in:client,psikiater'],
         ]);
-
-        $role = $request->role ?? 'client';
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $role,
+            'role' => $request->role ?? 'client',
         ]);
 
-        event(new Registered($user));
+    event(new Registered($user));
 
-        Auth::login($user);
-
-        return redirect(RouteServiceProvider::HOME);
+    // Setelah register, arahkan ke halaman login
+    return redirect()->route('login')->with('status', 'Registrasi berhasil! Silakan login.');
     }
 }
